@@ -8,7 +8,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Config struct {
+type config struct {
 	APIKey string `yaml:"api_key"`
 }
 
@@ -30,12 +30,12 @@ func LoadAPIKey() (string, error) {
 	return cfg.APIKey, nil
 }
 
-func loadConfigFile() (*Config, error) {
+func loadConfigFile() (*config, error) {
 	data, err := os.ReadFile(ConfigPath())
 	if err != nil {
 		return nil, err
 	}
-	var cfg Config
+	var cfg config
 	if err := yaml.Unmarshal(data, &cfg); err != nil {
 		return nil, err
 	}
