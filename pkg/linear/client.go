@@ -61,13 +61,16 @@ func (c *Client) do(ctx context.Context, query string, vars map[string]any, dest
 		return fmt.Errorf("linear: read response: %w", err)
 	}
 
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return &APIError{StatusCode: resp.StatusCode}
-	}
-
 	var gqlResp graphQLResponse
 	if err := json.Unmarshal(respBody, &gqlResp); err != nil {
+		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+			return &APIError{StatusCode: resp.StatusCode}
+		}
 		return fmt.Errorf("linear: unmarshal response: %w", err)
+	}
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return &APIError{StatusCode: resp.StatusCode, Errors: gqlResp.Errors}
 	}
 
 	if len(gqlResp.Errors) > 0 {
