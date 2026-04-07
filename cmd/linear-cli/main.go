@@ -7,5 +7,7 @@ import (
 var AppVersion = "dev"
 
 func main() {
+	InitConfig()
+
 	fmt.Printf("linear-cli %s\n", AppVersion)
 }
