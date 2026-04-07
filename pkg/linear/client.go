@@ -48,7 +48,7 @@ func (c *Client) do(ctx context.Context, query string, vars map[string]any, dest
 		return fmt.Errorf("linear: create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", c.apiKey)
+	req.Header.Set("Authorization", "Bearer "+c.apiKey)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
