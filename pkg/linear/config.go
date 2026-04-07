@@ -19,7 +19,10 @@ func LoadAPIKey() (string, error) {
 
 	cfg, err := loadConfigFile()
 	if err != nil {
-		return "", fmt.Errorf("no API key found: set LINEAR_API_KEY or add api_key to %s", ConfigPath())
+		if os.IsNotExist(err) {
+			return "", fmt.Errorf("no API key found: set LINEAR_API_KEY or add api_key to %s", ConfigPath())
+		}
+		return "", fmt.Errorf("failed to read config file %s: %w", ConfigPath(), err)
 	}
 	if cfg.APIKey == "" {
 		return "", fmt.Errorf("no API key found: set LINEAR_API_KEY or add api_key to %s", ConfigPath())
