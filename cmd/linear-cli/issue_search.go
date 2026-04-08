@@ -10,6 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var searchLimit int
+
 var issueSearchCmd = &cobra.Command{
 	Use:   "search <keywords>",
 	Short: "Search issues by keywords",
@@ -17,7 +19,7 @@ var issueSearchCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		query := strings.Join(args, " ")
 
-		issues, err := service.SearchIssues(context.Background(), query)
+		issues, err := service.SearchIssues(context.Background(), query, searchLimit)
 		if err != nil {
 			return err
 		}
@@ -45,9 +47,14 @@ var issueSearchCmd = &cobra.Command{
 	},
 }
 
+func init() {
+	issueSearchCmd.Flags().IntVar(&searchLimit, "limit", 20, "maximum number of results")
+}
+
 func truncate(s string, max int) string {
-	if len(s) <= max {
+	r := []rune(s)
+	if len(r) <= max {
 		return s
 	}
-	return s[:max-3] + "..."
+	return string(r[:max-3]) + "..."
 }
