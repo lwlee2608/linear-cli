@@ -8,7 +8,13 @@ A command-line interface for [Linear](https://linear.app).
 make build
 ```
 
-The binary will be at `bin/linear-cli`.
+The binary will be at `bin/linear`.
+
+To install to `/usr/local/bin`:
+
+```bash
+sudo make install
+```
 
 ## Configuration
 
@@ -25,7 +31,7 @@ You can generate an API key from Linear under **Settings > Security & access > A
 ### Search issues
 
 ```bash
-linear-cli issue search <keywords>
+linear issue search <keywords>
 ```
 
 Options:
@@ -34,18 +40,18 @@ Options:
 Example:
 
 ```bash
-linear-cli issue search "login bug"
-linear-cli issue search auth --limit 5
+linear issue search "login bug"
+linear issue search auth --limit 5
 ```
 
 ### Get an issue
 
 ```bash
-linear-cli issue get <id>
+linear issue get <id>
 ```
 
 Example:
 
 ```bash
-linear-cli issue get ENG-123
+linear issue get ENG-123
 ```

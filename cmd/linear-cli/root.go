@@ -10,7 +10,7 @@ import (
 var service *internallinear.Service
 
 var rootCmd = &cobra.Command{
-	Use:   "linear-cli",
+	Use:   "linear",
 	Short: "CLI for Linear",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		if err := InitConfig(); err != nil {
