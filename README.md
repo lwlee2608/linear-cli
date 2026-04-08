@@ -10,10 +10,10 @@ make build
 
 The binary will be at `bin/linear`.
 
-To install to `/usr/local/bin`:
+To install to `~/.local/bin`:
 
 ```bash
-sudo make install
+make install
 ```
 
 ## Configuration

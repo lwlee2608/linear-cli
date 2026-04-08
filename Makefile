@@ -4,7 +4,7 @@ APP             := linear
 SRC_DIR         := cmd/linear-cli
 VERSION         ?= v0.1.0
 LDFLAGS         := -ldflags "-X main.AppVersion=$(VERSION)"
-PREFIX          ?= /usr/local
+PREFIX          ?= $(HOME)/.local
 
 .PHONY: all build clean run test install uninstall
 
