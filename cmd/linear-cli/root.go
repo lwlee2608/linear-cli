@@ -9,17 +9,18 @@ import (
 
 var service *internallinear.Service
 
+func initService(cmd *cobra.Command, args []string) error {
+	if err := InitConfig(); err != nil {
+		return err
+	}
+	client := linear.NewClient(config.Linear.APIKey)
+	service = internallinear.NewService(client)
+	return nil
+}
+
 var rootCmd = &cobra.Command{
 	Use:   "linear",
 	Short: "CLI for Linear",
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		if err := InitConfig(); err != nil {
-			return err
-		}
-		client := linear.NewClient(config.Linear.APIKey)
-		service = internallinear.NewService(client)
-		return nil
-	},
 }
 
 func init() {
