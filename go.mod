@@ -3,7 +3,6 @@ module github.com/lwlee2608/linear-cli
 go 1.25.0
 
 require (
-	github.com/joho/godotenv v1.5.1
 	github.com/lwlee2608/adder v0.3.2
 	github.com/spf13/cobra v1.10.2
 )

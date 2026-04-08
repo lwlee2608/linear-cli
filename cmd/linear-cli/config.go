@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"strings"
 
-	"github.com/joho/godotenv"
 	"github.com/lwlee2608/adder"
 	"github.com/lwlee2608/linear-cli/pkg/linear"
 )
@@ -15,21 +15,12 @@ type Config struct {
 
 var config Config
 
-func InitConfig() {
-	_ = godotenv.Load()
-
-	adder.SetConfigName("application")
-	adder.AddConfigPath(".")
-	adder.SetConfigType("yaml")
+func InitConfig() error {
 	adder.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	adder.AutomaticEnv()
 
-	if err := adder.ReadInConfig(); err != nil {
-		panic(err)
-	}
-
 	if err := adder.Unmarshal(&config); err != nil {
-		panic(err)
+		return fmt.Errorf("failed to load config: %w", err)
 	}
 
 	configJSON, err := adder.PrettyJSON(config)
@@ -39,6 +30,7 @@ func InitConfig() {
 	}
 
 	if config.Linear.APIKey == "" {
-		panic("linear.api_key is required: set LINEAR_API_KEY env var or add it to application.yml")
+		return fmt.Errorf("LINEAR_API_KEY environment variable is required")
 	}
+	return nil
 }
