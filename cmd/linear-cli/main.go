@@ -1,13 +1,12 @@
 package main
 
-import (
-	"fmt"
-)
+import "os"
 
 var AppVersion = "dev"
 
 func main() {
-	InitConfig()
-
-	fmt.Printf("linear-cli %s\n", AppVersion)
+	rootCmd.Version = AppVersion
+	if err := rootCmd.Execute(); err != nil {
+		os.Exit(1)
+	}
 }

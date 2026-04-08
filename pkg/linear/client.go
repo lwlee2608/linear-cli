@@ -162,6 +162,21 @@ func (c *Client) ListTeams(ctx context.Context, first int, after string) (*TeamC
 	return &resp.Teams, nil
 }
 
+func (c *Client) SearchIssues(ctx context.Context, query string, first int, after string) (*IssueConnection, error) {
+	vars := map[string]any{"query": query, "first": first}
+	if after != "" {
+		vars["after"] = after
+	}
+
+	var resp struct {
+		SearchIssues IssueConnection `json:"searchIssues"`
+	}
+	if err := c.do(ctx, queryIssueSearch, vars, &resp); err != nil {
+		return nil, err
+	}
+	return &resp.SearchIssues, nil
+}
+
 func (c *Client) ListWorkflowStates(ctx context.Context, first int, after string, teamID string) (*WorkflowStateConnection, error) {
 	vars := map[string]any{"first": first}
 	if after != "" {
