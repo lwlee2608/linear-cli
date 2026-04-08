@@ -4,6 +4,14 @@ A command-line interface for [Linear](https://linear.app).
 
 ## Installation
 
+### Quick install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/lwlee2608/linear-cli/main/install.sh | bash
+```
+
+### From source
+
 ```bash
 make build
 ```
