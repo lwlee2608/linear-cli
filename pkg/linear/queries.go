@@ -66,3 +66,17 @@ query WorkflowStateList($first: Int, $after: String, $filter: WorkflowStateFilte
     pageInfo { hasNextPage endCursor }
   }
 }`
+
+const queryIssueSearch = `
+query IssueSearch($query: String!, $first: Int, $after: String) {
+  searchIssues(query: $query, first: $first, after: $after) {
+    nodes {
+      id identifier title priority
+      createdAt updatedAt
+      state { id name type color }
+      team  { id name key }
+      assignee { id name email }
+    }
+    pageInfo { hasNextPage endCursor }
+  }
+}`
