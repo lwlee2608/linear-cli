@@ -21,6 +21,7 @@ var issueGetCmd = &cobra.Command{
 		fmt.Printf("Title:       %s\n", issue.Title)
 		fmt.Printf("State:       %s\n", issue.State.Name)
 		fmt.Printf("Team:        %s\n", issue.Team.Name)
+		fmt.Printf("Created:     %s\n", issue.CreatedAt.Format("2006-01-02 15:04:05"))
 		fmt.Printf("Priority:    %d\n", issue.Priority)
 		if issue.Assignee != nil {
 			fmt.Printf("Assignee:    %s\n", issue.Assignee.Name)
