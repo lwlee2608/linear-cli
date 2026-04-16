@@ -14,8 +14,25 @@ type Issue struct {
 	State       WorkflowState `json:"state"`
 	Team        Team          `json:"team"`
 	Assignee    *User         `json:"assignee"`
+	Project     *Project         `json:"project"`
+	Labels      LabelConnection  `json:"labels"`
 	CreatedAt   time.Time     `json:"createdAt"`
 	UpdatedAt   time.Time     `json:"updatedAt"`
+}
+
+type Project struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type Label struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Color string `json:"color"`
+}
+
+type LabelConnection struct {
+	Nodes []Label `json:"nodes"`
 }
 
 type Team struct {

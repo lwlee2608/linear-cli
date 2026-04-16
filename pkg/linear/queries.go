@@ -8,6 +8,8 @@ query IssueGet($id: String!) {
     state { id name type color }
     team  { id name key }
     assignee { id name email }
+    project { id name }
+    labels { nodes { id name color } }
   }
 }`
 
