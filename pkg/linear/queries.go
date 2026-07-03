@@ -53,6 +53,17 @@ mutation IssueUpdate($id: String!, $input: IssueUpdateInput!) {
   }
 }`
 
+const mutationCommentCreate = `
+mutation CommentCreate($input: CommentCreateInput!) {
+  commentCreate(input: $input) {
+    success
+    comment {
+      id body createdAt
+      user { id name email }
+    }
+  }
+}`
+
 const queryTeamList = `
 query TeamList($first: Int, $after: String) {
   teams(first: $first, after: $after) {

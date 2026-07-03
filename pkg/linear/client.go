@@ -147,6 +147,22 @@ func (c *Client) UpdateIssue(ctx context.Context, id string, input IssueUpdateIn
 	return &resp.IssueUpdate.Issue, nil
 }
 
+func (c *Client) CreateComment(ctx context.Context, input CommentCreateInput) (*Comment, error) {
+	var resp struct {
+		CommentCreate struct {
+			Success bool    `json:"success"`
+			Comment Comment `json:"comment"`
+		} `json:"commentCreate"`
+	}
+	if err := c.do(ctx, mutationCommentCreate, map[string]any{"input": input}, &resp); err != nil {
+		return nil, err
+	}
+	if !resp.CommentCreate.Success {
+		return nil, fmt.Errorf("linear: commentCreate returned success=false")
+	}
+	return &resp.CommentCreate.Comment, nil
+}
+
 func (c *Client) ListTeams(ctx context.Context, first int, after string) (*TeamConnection, error) {
 	vars := map[string]any{"first": first}
 	if after != "" {

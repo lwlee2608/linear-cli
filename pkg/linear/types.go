@@ -54,6 +54,18 @@ type User struct {
 	Email string `json:"email"`
 }
 
+type Comment struct {
+	ID        string    `json:"id"`
+	Body      string    `json:"body"`
+	User      *User     `json:"user"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type CommentCreateInput struct {
+	IssueID string `json:"issueId"`
+	Body    string `json:"body"`
+}
+
 type IssueCreateInput struct {
 	Title       string  `json:"title"`
 	Description *string `json:"description,omitempty"`
