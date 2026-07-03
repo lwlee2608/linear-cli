@@ -11,4 +11,5 @@ var issueCmd = &cobra.Command{
 func init() {
 	issueCmd.AddCommand(issueGetCmd)
 	issueCmd.AddCommand(issueSearchCmd)
+	issueCmd.AddCommand(issueCommentCmd)
 }
