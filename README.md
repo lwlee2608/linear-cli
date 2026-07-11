@@ -63,3 +63,11 @@ Example:
 ```bash
 linear issue get ENG-123
 ```
+
+Download images embedded in an issue description:
+
+```bash
+linear issue get DEV-12 --download-images ./DEV-12-images
+```
+
+Images are saved as `image-01.png`, `image-02.png`, and so on. Existing files are not overwritten.

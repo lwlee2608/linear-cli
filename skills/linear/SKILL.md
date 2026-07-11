@@ -23,9 +23,12 @@ Interact with Linear.app issues using the `linear` CLI.
 
 ```bash
 linear issue get ENG-123
+linear issue get DEV-12 --download-images ./DEV-12-images
 ```
 
 Returns: identifier, title, state, team, project, created date, priority, assignee, labels, description.
+
+Use `--download-images <directory>` to download images embedded in the description. Existing files are not overwritten.
 
 ### Search issues
 

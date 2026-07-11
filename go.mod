@@ -5,6 +5,7 @@ go 1.25.0
 require (
 	github.com/lwlee2608/adder v0.3.2
 	github.com/spf13/cobra v1.10.2
+	github.com/yuin/goldmark v1.7.13
 )
 
 require (

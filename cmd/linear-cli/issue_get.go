@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -14,7 +13,7 @@ var issueGetCmd = &cobra.Command{
 	Short: "Get an issue by ID",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		issue, err := service.GetIssue(context.Background(), args[0])
+		issue, err := service.GetIssue(cmd.Context(), args[0])
 		if err != nil {
 			return err
 		}
@@ -41,6 +40,28 @@ var issueGetCmd = &cobra.Command{
 		if issue.Description != "" {
 			fmt.Printf("Description: %s\n", issue.Description)
 		}
+		if issueImageDirectory != "" {
+			paths, err := service.DownloadIssueImages(cmd.Context(), issue, issueImageDirectory)
+			if len(paths) == 0 {
+				if err == nil {
+					fmt.Printf("No images found in %s\n", issue.Identifier)
+				}
+			} else {
+				fmt.Println("Downloaded images:")
+				for _, path := range paths {
+					fmt.Printf("  %s\n", path)
+				}
+			}
+			if err != nil {
+				return err
+			}
+		}
 		return nil
 	},
+}
+
+var issueImageDirectory string
+
+func init() {
+	issueGetCmd.Flags().StringVar(&issueImageDirectory, "download-images", "", "download description images to a directory")
 }
