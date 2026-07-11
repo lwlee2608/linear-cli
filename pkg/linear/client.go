@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 const defaultEndpoint = "https://api.linear.app/graphql"
@@ -23,6 +25,52 @@ func NewClient(apiKey string) *Client {
 		endpoint:   defaultEndpoint,
 		httpClient: http.DefaultClient,
 	}
+}
+
+func (c *Client) DownloadImage(ctx context.Context, imageURL string) (io.ReadCloser, string, error) {
+	parsedURL, err := url.Parse(imageURL)
+	if err != nil {
+		return nil, "", fmt.Errorf("linear: parse image URL: %w", err)
+	}
+	if parsedURL.Scheme != "https" || !strings.EqualFold(parsedURL.Hostname(), "uploads.linear.app") {
+		return nil, "", fmt.Errorf("linear: unsupported image URL host %q", parsedURL.Hostname())
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, parsedURL.String(), nil)
+	if err != nil {
+		return nil, "", fmt.Errorf("linear: create image request: %w", err)
+	}
+	req.Header.Set("Authorization", c.apiKey)
+
+	httpClient := *c.httpClient
+	previousCheckRedirect := httpClient.CheckRedirect
+	httpClient.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		if req.URL.Scheme != "https" || !strings.EqualFold(req.URL.Hostname(), "uploads.linear.app") {
+			return fmt.Errorf("linear: unsupported image redirect host %q", req.URL.Hostname())
+		}
+		if previousCheckRedirect != nil {
+			return previousCheckRedirect(req, via)
+		}
+		if len(via) >= 10 {
+			return fmt.Errorf("linear: stopped after 10 redirects")
+		}
+		return nil
+	}
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return nil, "", fmt.Errorf("linear: download image: %w", err)
+	}
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		resp.Body.Close()
+		return nil, "", fmt.Errorf("linear: download image: HTTP %d", resp.StatusCode)
+	}
+	contentType := resp.Header.Get("Content-Type")
+	if !strings.HasPrefix(strings.ToLower(contentType), "image/") {
+		resp.Body.Close()
+		return nil, "", fmt.Errorf("linear: download image: unexpected content type %q", contentType)
+	}
+	return resp.Body, contentType, nil
 }
 
 type APIError struct {
