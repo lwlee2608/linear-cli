@@ -3,15 +3,16 @@ package linear
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	pkglinear "github.com/lwlee2608/linear-cli/pkg/linear"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/ast"
+	"github.com/yuin/goldmark/text"
 )
-
-var markdownImagePattern = regexp.MustCompile(`!\[[^\]]*\]\(\s*(?:<([^>]+)>|([^\s)]+))(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)`)
 
 func (s *Service) DownloadIssueImages(ctx context.Context, issue *pkglinear.Issue, dir string) ([]string, error) {
 	urls := markdownImageURLs(issue.Description)
@@ -40,21 +41,32 @@ func (s *Service) DownloadIssueImages(ctx context.Context, issue *pkglinear.Issu
 }
 
 func markdownImageURLs(description string) []string {
-	matches := markdownImagePattern.FindAllStringSubmatch(description, -1)
-	urls := make([]string, 0, len(matches))
-	seen := make(map[string]struct{}, len(matches))
-	for _, match := range matches {
-		imageURL := match[1]
-		if imageURL == "" {
-			imageURL = match[2]
+	source := []byte(description)
+	document := goldmark.DefaultParser().Parse(text.NewReader(source))
+	urls := make([]string, 0)
+	seen := make(map[string]struct{})
+	_ = ast.Walk(document, func(node ast.Node, entering bool) (ast.WalkStatus, error) {
+		image, ok := node.(*ast.Image)
+		if !entering || !ok {
+			return ast.WalkContinue, nil
+		}
+		imageURL := string(image.Destination)
+		if !isLinearUploadURL(imageURL) {
+			return ast.WalkContinue, nil
 		}
 		if _, ok := seen[imageURL]; ok {
-			continue
+			return ast.WalkContinue, nil
 		}
 		seen[imageURL] = struct{}{}
 		urls = append(urls, imageURL)
-	}
+		return ast.WalkContinue, nil
+	})
 	return urls
+}
+
+func isLinearUploadURL(imageURL string) bool {
+	parsedURL, err := url.Parse(imageURL)
+	return err == nil && parsedURL.Scheme == "https" && strings.EqualFold(parsedURL.Hostname(), "uploads.linear.app")
 }
 
 func imageExtension(contentType string) string {
@@ -80,12 +92,13 @@ func writeNewFile(path string, body interface {
 	Read([]byte) (int, error)
 	Close() error
 }) (err error) {
+	defer body.Close()
+
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
 	if err != nil {
 		return fmt.Errorf("create image file %s: %w", path, err)
 	}
 	defer func() {
-		body.Close()
 		if closeErr := file.Close(); err == nil && closeErr != nil {
 			err = fmt.Errorf("close image file %s: %w", path, closeErr)
 		}

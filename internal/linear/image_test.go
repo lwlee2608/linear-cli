@@ -9,11 +9,29 @@ import (
 	"testing"
 )
 
+type trackingReadCloser struct {
+	io.Reader
+	closed bool
+}
+
+func (r *trackingReadCloser) Close() error {
+	r.closed = true
+	return nil
+}
+
 func TestMarkdownImageURLs(t *testing.T) {
 	description := `before
 ![first](https://uploads.linear.app/a)
 [normal](https://uploads.linear.app/not-an-image)
 ![with title](<https://uploads.linear.app/b> "title")
+![external](https://example.com/image.png)
+` + "`![inline code](https://uploads.linear.app/inline)`" + `
+<!-- ![comment](https://uploads.linear.app/comment) -->
+
+` + "```markdown" + `
+![fenced](https://uploads.linear.app/fenced)
+` + "```" + `
+
 ![duplicate](https://uploads.linear.app/a)`
 
 	want := []string{
@@ -57,5 +75,20 @@ func TestWriteNewFile(t *testing.T) {
 
 	if err := writeNewFile(path, io.NopCloser(strings.NewReader("replacement"))); err == nil {
 		t.Fatal("writeNewFile() overwrote an existing file")
+	}
+}
+
+func TestWriteNewFileClosesBodyWhenFileExists(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "image.png")
+	if err := os.WriteFile(path, []byte("existing"), 0o644); err != nil {
+		t.Fatalf("create existing file: %v", err)
+	}
+
+	body := &trackingReadCloser{Reader: strings.NewReader("replacement")}
+	if err := writeNewFile(path, body); err == nil {
+		t.Fatal("writeNewFile() overwrote an existing file")
+	}
+	if !body.closed {
+		t.Fatal("writeNewFile() did not close body")
 	}
 }
