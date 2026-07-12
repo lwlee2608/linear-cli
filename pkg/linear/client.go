@@ -211,6 +211,22 @@ func (c *Client) CreateComment(ctx context.Context, input CommentCreateInput) (*
 	return &resp.CommentCreate.Comment, nil
 }
 
+func (c *Client) UpdateComment(ctx context.Context, id string, input CommentUpdateInput) (*Comment, error) {
+	var resp struct {
+		CommentUpdate struct {
+			Success bool    `json:"success"`
+			Comment Comment `json:"comment"`
+		} `json:"commentUpdate"`
+	}
+	if err := c.do(ctx, mutationCommentUpdate, map[string]any{"id": id, "input": input}, &resp); err != nil {
+		return nil, err
+	}
+	if !resp.CommentUpdate.Success {
+		return nil, fmt.Errorf("linear: commentUpdate returned success=false")
+	}
+	return &resp.CommentUpdate.Comment, nil
+}
+
 func (c *Client) ListTeams(ctx context.Context, first int, after string) (*TeamConnection, error) {
 	vars := map[string]any{"first": first}
 	if after != "" {
