@@ -2,7 +2,7 @@
 name: linear
 description: Use when the user wants to interact with Linear.app — reading, searching, or commenting on issues/tickets.
 user-invocable: true
-argument-hint: "[get <id> | search <query> | comment <id> <body>]"
+argument-hint: "[get <id> | search <query> | comment <id> <body> | comment edit <comment-id> <body>]"
 ---
 
 # Linear Issue Management
@@ -46,3 +46,11 @@ linear issue comment ENG-123 "comment body"
 ```
 
 Accepts the issue identifier (e.g. `ENG-123`) or UUID. Prints the comment author and body on success.
+
+### Edit a comment
+
+```bash
+linear issue comment edit <comment-id> "updated body"
+```
+
+Requires the comment UUID, available from Linear's comment URL. Prints the comment author and updated body on success.

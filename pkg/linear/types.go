@@ -6,18 +6,18 @@ import (
 )
 
 type Issue struct {
-	ID          string        `json:"id"`
-	Identifier  string        `json:"identifier"`
-	Title       string        `json:"title"`
-	Description string        `json:"description"`
-	Priority    int           `json:"priority"`
-	State       WorkflowState `json:"state"`
-	Team        Team          `json:"team"`
-	Assignee    *User         `json:"assignee"`
-	Project     *Project         `json:"project"`
-	Labels      LabelConnection  `json:"labels"`
-	CreatedAt   time.Time     `json:"createdAt"`
-	UpdatedAt   time.Time     `json:"updatedAt"`
+	ID          string          `json:"id"`
+	Identifier  string          `json:"identifier"`
+	Title       string          `json:"title"`
+	Description string          `json:"description"`
+	Priority    int             `json:"priority"`
+	State       WorkflowState   `json:"state"`
+	Team        Team            `json:"team"`
+	Assignee    *User           `json:"assignee"`
+	Project     *Project        `json:"project"`
+	Labels      LabelConnection `json:"labels"`
+	CreatedAt   time.Time       `json:"createdAt"`
+	UpdatedAt   time.Time       `json:"updatedAt"`
 }
 
 type Project struct {
@@ -64,6 +64,10 @@ type Comment struct {
 type CommentCreateInput struct {
 	IssueID string `json:"issueId"`
 	Body    string `json:"body"`
+}
+
+type CommentUpdateInput struct {
+	Body string `json:"body"`
 }
 
 type IssueCreateInput struct {

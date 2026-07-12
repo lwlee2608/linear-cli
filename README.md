@@ -71,3 +71,17 @@ linear issue get DEV-12 --download-images ./DEV-12-images
 ```
 
 Images are saved as `image-01.png`, `image-02.png`, and so on. Existing files are not overwritten.
+
+### Add a comment
+
+```bash
+linear issue comment ENG-123 "comment body"
+```
+
+### Edit a comment
+
+```bash
+linear issue comment edit <comment-id> "updated body"
+```
+
+Editing requires the comment UUID, available from Linear's comment URL.
